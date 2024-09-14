@@ -7,7 +7,7 @@ func main() {
 	fg := utils.NewFileGenerator("./")
 
 
-	err := fg.GenerateFile("Hello World")
+	err := fg.GenerateFile("testing.go", "hello world!")
 	if err != nil {
 		println(err.Error())
 	}

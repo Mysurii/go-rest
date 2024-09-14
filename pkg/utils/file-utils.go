@@ -25,9 +25,9 @@ func (fg *fileGenerator) GenerateFolder() error {
 	return nil
 }
 
-func (fg *fileGenerator) GenerateFile(templateData string) error {
+func (fg *fileGenerator) GenerateFile(f string, templateData string) error {
 	// Create the file
-	file, err := os.Create(fg.Path)
+	file, err := os.Create(f)
 	if err != nil {
 		return fmt.Errorf("failed to create file %s: %w", fg.Path, err)
 	}
