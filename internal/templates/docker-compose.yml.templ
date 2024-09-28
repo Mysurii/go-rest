@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: "localhost"
+      DB_PORT: "5432"  # Adjust based on your DB setup
+      DB_USERNAME: "your_db_user"
+      DB_PASSWORD: "your_db_password"
+      DB_DATABASE: "your_db_name"
+    volumes:
+      - .:/app
