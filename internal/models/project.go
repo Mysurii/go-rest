@@ -5,24 +5,18 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 )
 
-var (
-	errorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF8700")).Bold(true).Padding(0, 0, 0)
-)
 
 type ProjectModel struct {
-	name string
 	header    string
 	textInput textinput.Model
 	err       error
+	program   *Program
 }
 
 
-
-
-func InitializeProjectModel(header string) ProjectModel {
+func InitializeProjectModel(header string, program *Program) ProjectModel {
 	ti := textinput.New()
 	ti.Focus()
 	ti.CharLimit = 156
@@ -32,6 +26,7 @@ func InitializeProjectModel(header string) ProjectModel {
 	return ProjectModel{
 		textInput: ti,
 		header:    titleStyle.Render(header),
+		program:   program,
 	}
 }
 
@@ -47,10 +42,11 @@ func (m ProjectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.Type {
 		case tea.KeyEnter:
 			if len(m.textInput.Value()) > 1 {
-				m.name = m.textInput.Value()
+				m.program.Project = m.textInput.Value()
 				return m, tea.Quit
 			}
 		case tea.KeyCtrlC, tea.KeyEsc:
+			m.program.Exit = true
 			return m, tea.Quit
 		}
 
@@ -72,6 +68,3 @@ func (m ProjectModel) View() string {
 	)
 }
 
-func (m ProjectModel) GetName() string {
-	return m.name
-}

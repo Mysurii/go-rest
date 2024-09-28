@@ -19,21 +19,23 @@ var (
 )
 
 type DriverModel struct {
-	header string
-	cursor int
-	options []steps.Option
+	header 	 string
+	cursor 	 int
+	options  []steps.Option
 	selected int
+	program  *Program
 }
 
 func (m DriverModel) Init() tea.Cmd {
 	return nil
 }
 
-func InitialDriverModel(header string) DriverModel {
+func InitialDriverModel(header string, program *Program) DriverModel {
 	return DriverModel{
-		header: header,
+		header:   header,
 		options:  steps.DriverOptions,
-		selected: 0 ,
+		selected: 0,
+		program:  program,		
 	}
 }
 
@@ -42,6 +44,7 @@ func (m DriverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c", "q":
+			m.program.Exit = true
 			return m, tea.Quit
 		case "up":
 			if m.cursor > 0 {
@@ -54,6 +57,7 @@ func (m DriverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter", " ":
 			m.selected = m.cursor
 		case "y":
+			m.program.SetDriver(m.options[m.selected].Title)
 			return m, tea.Quit
 			
 				
@@ -88,8 +92,4 @@ func (m DriverModel) View() string {
 
 	s += fmt.Sprintf("Press %s to confirm choice.\n", focusedStyle.Render("y"))
 	return s
-}
-
-func (m DriverModel) GetDriver() string {
-	return m.options[m.selected].Title
 }

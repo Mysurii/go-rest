@@ -7,9 +7,12 @@ import (
 	"go-rest/pkg/utils"
 	"log"
 	"path/filepath"
-	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
+)
+
+var (
+	p = &models.Program{}
 )
 
 
@@ -17,34 +20,29 @@ func printBanner() {
 	fmt.Println(config.Banner)
 }
 
-func promptProjectName() (models.ProjectModel, error) {
-	projectInputModel := models.InitializeProjectModel("Name of your project.")
-	finalProjectModel, err := tea.NewProgram(projectInputModel).Run()
-	if err != nil {
-		return models.ProjectModel{}, err
+func promptProjectName() error {
+	model := models.InitializeProjectModel("Name of your project.", p)
+	tProgram := tea.NewProgram(model)
+
+	if _, err := tProgram.Run(); err != nil {
+		return err
 	}
 
-	projectModel, ok := finalProjectModel.(models.ProjectModel)
-	if !ok {
-		return models.ProjectModel{}, fmt.Errorf("unexpected model type")
-	}
+	p.ExitCLI(tProgram)
 
-	return projectModel, nil
+	return nil
 }
 
-func promptDatabaseSelection() (models.DriverModel, error) {
-	databaseSelectionModel := models.InitialDriverModel("Select the database you want to use for your server:")
-	finalDatabaseModel, err := tea.NewProgram(databaseSelectionModel).Run()
-	if err != nil {
-		return models.DriverModel{}, err
+func promtDriverSelection() error {
+	model := models.InitialDriverModel("Select the database you want to use for your server:", p)
+	tProgram := tea.NewProgram(model)
+	if _, err := tProgram.Run(); err != nil {
+		return err
 	}
 
-	driverModel, ok := finalDatabaseModel.(models.DriverModel)
-	if !ok {
-		return models.DriverModel{}, fmt.Errorf("unexpected model type")
-	}
+	p.ExitCLI(tProgram)
 
-	return driverModel, nil
+	return nil
 }
 
 
@@ -54,26 +52,37 @@ func promptDatabaseSelection() (models.DriverModel, error) {
 func main() {	
 	printBanner()
 
-	projectModel, err := promptProjectName()
+	err := promptProjectName()
 	if err != nil {
 		log.Fatalf("Error retrieving project name: %v", err)
 	}
 
 
-	driverModel, err := promptDatabaseSelection()
+	err = promtDriverSelection()
 	if err != nil {
 		log.Fatalf("Error retrieving database: %v", err)
 	}
 
-	baseDir := filepath.Join(".", projectModel.GetName())
+	println("Project: ", p.Project)
+	println("Driver:", p.GetDriver())
+
+	baseDir := filepath.Join(".", p.Project)
 	config.CreateProjectStructure(baseDir)
 
 	templData := models.TemplateData{
-		Project: projectModel.GetName(),
-		Driver:  strings.ToLower(driverModel.GetDriver()),
+		Project: p.Project,
+		Driver:  p.GetDriver(),
 	}
 
-	templates := config.PrepareTemplates(baseDir, driverModel.GetDriver())
+	templates := config.PrepareTemplates(baseDir, p.GetDriver())
+
+	for _, t := range templates {
+		if err := utils.ValidateTemplate(t.TemplatePath); err != nil {
+			panic(err)
+		}
+	}
+
+
 
 	// Generate files in parallel
 	statusChan := make(chan string)
@@ -87,7 +96,7 @@ func main() {
 	}
 
 	// Initialize Go module and tidy up
-	if err := config.InitializeGoMod(projectModel.GetName()); err != nil {
+	if err := config.InitializeGoMod(p.Project); err != nil {
 		log.Println(err)
 	}
 	
