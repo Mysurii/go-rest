@@ -9,10 +9,14 @@ import (
 	"path/filepath"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 var (
 	p = &models.Program{}
+	errorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF0000")).Bold(true)
+	successStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#10b981")).Bold(true)
+
 )
 
 
@@ -46,28 +50,25 @@ func promtDriverSelection() error {
 }
 
 
-
-
 // Main function where Bubble Tea's tea.NewProgram is initialized
 func main() {	
 	printBanner()
 
 	err := promptProjectName()
 	if err != nil {
-		log.Fatalf("Error retrieving project name: %v", err)
+		errorMessage := errorStyle.Render("Error retrieving prohject name: " + err.Error())
+		log.Fatalf(errorMessage)
 	}
 
 
 	err = promtDriverSelection()
 	if err != nil {
-		log.Fatalf("Error retrieving database: %v", err)
+		errorMessage := errorStyle.Render("Error retrieving drivers: " + err.Error())
+		log.Fatalf(errorMessage)
 	}
 
-	println("Project: ", p.Project)
-	println("Driver:", p.GetDriver())
-
 	baseDir := filepath.Join(".", p.Project)
-	config.CreateProjectStructure(baseDir)
+	
 
 	templData := models.TemplateData{
 		Project: p.Project,
@@ -78,10 +79,13 @@ func main() {
 
 	for _, t := range templates {
 		if err := utils.ValidateTemplate(t.TemplatePath); err != nil {
-			panic(err)
+			errorMessage := errorStyle.Render(err.Error())
+			panic(errorMessage)
 		}
 	}
 
+	config.CreateProjectStructure(baseDir)
+	fmt.Println()
 
 
 	// Generate files in parallel
@@ -95,9 +99,14 @@ func main() {
 		fmt.Println(<-statusChan)
 	}
 
+	fmt.Println()
+
 	// Initialize Go module and tidy up
 	if err := config.InitializeGoMod(p.Project); err != nil {
 		log.Println(err)
 	}
-	
+
+    // Create a success message
+    successMessage := successStyle.Render("\nSuccessfully generated your Rest API: " + p.Project)
+	fmt.Println(successMessage)
 }
