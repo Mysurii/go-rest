@@ -29,6 +29,7 @@ func PrepareTemplates(baseDir, driver string) []utils.TemplateInfo {
 		{FilePath: filepath.Join(baseDir, "internal", "server", "server.go"), TemplatePath: "internal/templates/server.server.go.templ"},
 		{FilePath: filepath.Join(baseDir, "internal", "server", "routes.go"), TemplatePath: "internal/templates/server.routes.go.templ"},
 		{FilePath: filepath.Join(baseDir, "internal", "database", "database.go"), TemplatePath: fmt.Sprintf("internal/templates/db.%s.go.templ", strings.ToLower(driver))},
+		{FilePath: filepath.Join(baseDir, ".air.toml"), TemplatePath: "internal/templates/air.toml.templ"},
 		{FilePath: filepath.Join(baseDir, ".env"), TemplatePath: "internal/templates/env.templ"},
 		{FilePath: filepath.Join(baseDir, "Docker"), TemplatePath: "internal/templates/docker.templ"},
 		{FilePath: filepath.Join(baseDir, "docker-compose.yml"), TemplatePath: "internal/templates/docker-compose.yml.templ"},
