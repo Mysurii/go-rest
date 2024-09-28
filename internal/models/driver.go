@@ -57,6 +57,7 @@ func (m DriverModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter", " ":
 			m.selected = m.cursor
 		case "y":
+			println(m.options[m.selected].Title)
 			m.program.SetDriver(m.options[m.selected].Title)
 			return m, tea.Quit
 			

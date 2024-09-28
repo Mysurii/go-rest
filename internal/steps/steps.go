@@ -15,7 +15,7 @@ var DriverOptions = []Option{
 		Description: "MySQL-Driver for Go's database/sql package.",
 	},
 	{
-		Title:       "Sqlite3",
+		Title:       "Sqlite",
 		Description: "Sqlite3 driver that conforms to the built-in database/sql interface.",
 	},
 }

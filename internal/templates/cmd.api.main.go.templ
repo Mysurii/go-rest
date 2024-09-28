@@ -5,9 +5,13 @@ import (
 	"{{.Project}}/internal/server"
 )
 
+var (
+    listenAddr = os.Getenv("LISTENADDR")
+)
+
 func main() {
 
-	s := server.New()
+	s := server.New(listenAddr)
 
 	err := s.ListenAndServe()
 	if err != nil {
