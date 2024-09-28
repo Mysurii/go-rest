@@ -110,11 +110,11 @@ version: 1.2.1
 	}
 
 	templates := []TemplateInfo{
-		{filepath.Join(baseDir, "cmd", "api", "main.go"), "internal/template/cmd.api.main.go.templ"},
-		{filepath.Join(baseDir, "internal", "server", "server.go"), "internal/template/server.server.go.templ"},
-		{filepath.Join(baseDir, "internal", "server", "routes.go"), "internal/template/server.routes.go.templ"},
-		{filepath.Join(baseDir, "internal", "database", "database.go"), fmt.Sprintf("internal/template/db.%s.go.templ", strings.ToLower(driverModel.GetDriver()))},
-		{filepath.Join(baseDir, ".env"), "internal/template/env.templ"},
+		{filepath.Join(baseDir, "cmd", "api", "main.go"), "internal/templates/cmd.api.main.go.templ"},
+		{filepath.Join(baseDir, "internal", "server", "server.go"), "internal/templates/server.server.go.templ"},
+		{filepath.Join(baseDir, "internal", "server", "routes.go"), "internal/templates/server.routes.go.templ"},
+		{filepath.Join(baseDir, "internal", "database", "database.go"), fmt.Sprintf("internal/templates/db.%s.go.templ", strings.ToLower(driverModel.GetDriver()))},
+		{filepath.Join(baseDir, ".env"), "internal/templates/env.templ"},
 	}
 
 	// Parse all templates first to avoid partial creation
