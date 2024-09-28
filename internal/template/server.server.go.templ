@@ -1,0 +1,44 @@
+package server
+
+import (
+	"log"
+	"net/http"
+	"time"
+
+	"{{.Project}}/internal/template/database"
+)
+
+type Server struct {
+	store database.Store
+	listenAddr string
+}
+
+func New(listenAddr string) *Server {
+	store := database.NewStore()
+
+	server := &Server{
+		store: store,
+		listenAddr: listenAddr,
+	}
+
+	// server.init()
+
+	return server
+}
+
+func (s *Server) Run() error {
+	handler := s.RegisterRoutes()
+
+	srv := &http.Server{
+		Addr: s.listenAddr,
+		Handler: handler,
+		WriteTimeout: time.Second * 30 ,
+		ReadTimeout: time.Second * 10,
+		IdleTimeout: time.Minute,
+	}
+
+
+	log.Printf("Server running at %s", s.listenAddr)
+
+	return srv.ListenAndServe()
+}

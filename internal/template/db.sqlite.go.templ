@@ -1,0 +1,56 @@
+package database
+
+import (
+    "context"
+    "database/sql"
+    "fmt"
+    "log"
+    "os"
+    "time"
+
+    _ "github.com/mattn/go-sqlite3"
+    _ "github.com/joho/godotenv/autoload"
+)
+
+var (
+    database = os.Getenv("DB_DATABASE")
+)
+
+type Store interface {
+    CheckHealth() error
+    GetDB() *sql.DB
+}
+
+type storeImpl struct {
+    db *sql.DB
+}
+
+func NewStore() *storeImpl {
+    dsn := fmt.Sprintf("%s", database) // SQLite uses file-based DB, no need for host/port
+    db, err := sql.Open("sqlite3", dsn)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    dbInstance := &storeImpl{
+        db: db,
+    }
+
+    if err := dbInstance.CheckHealth(); err != nil {
+        log.Fatal(err)
+    }
+
+    return dbInstance
+}
+
+func (s *storeImpl) CheckHealth() error {
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    defer cancel()
+    err := s.db.PingContext(ctx)
+    return err
+}
+
+func (s *storeImpl) GetDB() *sql.DB {
+    return s.db
+}

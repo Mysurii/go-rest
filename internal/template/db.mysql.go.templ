@@ -1,0 +1,60 @@
+package database
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"log"
+	"os"
+	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/joho/godotenv/autoload"
+)
+
+var (
+    database = os.Getenv("DB_DATABASE")
+    password = os.Getenv("DB_PASSWORD")
+    username = os.Getenv("DB_USERNAME")
+    port     = os.Getenv("DB_PORT")
+    host     = os.Getenv("DB_HOST")
+)
+
+type Store interface {
+    CheckHealth() error
+    GetDB() *sql.DB
+}
+
+type storeImpl struct {
+    db *sql.DB
+}
+
+func NewStore() *storeImpl {
+    dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", username, password, host, port, database)
+    db, err := sql.Open("mysql", dsn)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    dbInstance := &storeImpl{
+        db: db,
+    }
+
+    if err := dbInstance.CheckHealth(); err != nil {
+        log.Fatal(err)
+    }
+
+    return dbInstance
+}
+
+func (s *storeImpl) CheckHealth() error {
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    defer cancel()
+    err := s.db.PingContext(ctx)
+    return err
+}
+
+func (s *storeImpl) GetDB() *sql.DB {
+    return s.db
+}
