@@ -29,13 +29,14 @@ The Go REST Application is a CLI tool that helps you scaffold a REST API project
 2. Build the application
 
     ```bash
-    go build -o go-rest
+    ./go-rest
 
 ### Running the Application
 
 To start the application, run the following command:
+
     ```bash
-    ./go-rest
+   go run ./cmd/api/main.go
 
 ### Usage
 
