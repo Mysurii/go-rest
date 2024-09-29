@@ -51,6 +51,8 @@ The application will then create the project structure and generate the necessar
 
 After running the application, your project structure will look something like this:
 
+
+```
 my-awesome-api/
 ├── cmd/
 │   └── api/
@@ -61,8 +63,13 @@ my-awesome-api/
 │   └── server/
 │       ├── routes.go
 │       └── server.go
+└── .air
 └── .env
-
+└── Dockerfile
+└── go.mod
+└── go.sum
+└── README.md
+```
 ## Contributing
 
 If you'd like to contribute to the project, feel free to open an issue or submit a pull request. Contributions are always welcome!
