@@ -1,4 +1,4 @@
-# Go REST Application
+# Go REST CLI Generator
 
 ## Overview
 
